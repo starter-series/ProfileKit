@@ -191,7 +191,7 @@ ProfileKit cards are plain SVG. They render anywhere a platform allows external 
 | `/api/timeline` | Vertical timeline |
 | `/api/tags` | Tag cloud / skill pills |
 | `/api/toc` | Table of contents |
-| `/api/posts` | Latest posts from dev.to / Hashnode / RSS |
+| `/api/posts` | Latest posts from dev.to / Medium / RSS (Hashnode via its RSS feed) |
 | **Animations** | |
 | `/api/typing` | Typewriter text |
 | `/api/wave` | Layered animated sin waves |
@@ -468,10 +468,12 @@ Pick a card from the sidebar, tweak parameters in the right panel, copy the URL 
 #### `/api/posts`
 | Param | Description |
 |-------|-------------|
-| `source` | `devto` (default) / `hashnode` / `medium` / `rss` |
-| `username` | Author username (devto / hashnode / medium) |
+| `source` | `devto` (default) / `medium` / `rss` |
+| `username` | Author username (devto / medium) |
 | `url` | Feed URL (rss source) |
 | `count` | Number of posts (default 5, max 10) |
+
+> Note: `source=hashnode` was retired in 2026-05 when Hashnode moved their GraphQL API behind a Pro-tier auth wall. Use `source=rss&url=https://<your>.hashnode.dev/rss.xml` instead — the RSS path still works without auth.
 
 ### Animations
 
