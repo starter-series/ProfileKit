@@ -171,6 +171,26 @@ ProfileKit cards are plain SVG. They render anywhere a platform allows external 
 
 **Verified a new context?** Open a PR updating the table — the test URL is any ProfileKit endpoint, e.g. `https://profilekit.vercel.app/api/wave?text=test`.
 
+## Related projects
+
+The GitHub-profile-card space has two long-running projects ProfileKit is most often compared against. The differences are stylistic, not "better/worse" — pick the one that matches how you want to write your README.
+
+| Axis | ProfileKit | [anuraghazra/github-readme-stats](https://github.com/anuraghazra/github-readme-stats) | [lowlighter/metrics](https://github.com/lowlighter/metrics) |
+|---|---|---|---|
+| Composition unit | 28 parameter-only URL endpoints | A handful of stat endpoints | Single rendered SVG built from 30+ plugins |
+| Update model | Per-request, 30-min CDN cache (animations are SVG/CSS, not refreshes) | Per-request, CDN cache | GitHub Action runs on cron, commits the SVG into the repo |
+| Configuration | Query string + optional `theme_url=` gist for palettes | Query string + per-theme presets | YAML in `.github/workflows/` |
+| Runtime deps | Zero (Node 22 `node:test`, `node:fetch`) | Several | Action toolchain + Docker image |
+| Cards beyond GitHub stats | Hero / section / divider / now / timeline / tags / toc / typing / wave / terminal / neon / glitch / matrix / snake / equalizer / heartbeat / constellation / radar / quote / posts (devto, medium, rss) | GitHub stats, languages, pin, gists | Mostly GitHub stats; plugin set is the largest of the three |
+| MCP integration | First-class — [`@heznpc/profilekit-mcp`](https://www.npmjs.com/package/@heznpc/profilekit-mcp) lets Claude / Cursor / Codex CLI build cards as a tool call | None | None |
+| Composition into one image | `/api/stack?cards=hero,section,now,…` | Not native | The whole point of metrics is a single composed image |
+
+**When ProfileKit fits well**: you want the same card definition usable in a GitHub README *and* a dev.to bio *and* an MCP tool call, you don't want a GitHub Action committing to your repo, and "no ranking, composable presentation" sounds right for your profile.
+
+**When the alternatives fit better**: if you want one giant pre-rendered SVG with 300+ knobs in YAML, `lowlighter/metrics` is the better tool. If you only need GitHub stats blocks and want the most adopted option, `anuraghazra/github-readme-stats` is the default.
+
+(Comparison reflects the state of all three repos as of 2026-05. Open a PR if any of these projects' models change materially.)
+
 ## Endpoints
 
 | Endpoint | Description |
