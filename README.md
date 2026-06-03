@@ -36,13 +36,13 @@ A community gallery for sharing single-card presets and adopting others' designs
 
 ## About this project
 
-**Currently implemented.** 28 SVG card endpoints (`/api/*`), 17 built-in themes plus gist-hosted custom palettes via `theme_url=`, five bundled variable fonts, `/api/stack` composition with namespaced child IDs, a live playground at [profilekit.vercel.app](https://profilekit.vercel.app), and an MCP wrapper at [`@heznpc/profilekit-mcp`](https://www.npmjs.com/package/@heznpc/profilekit-mcp). Zero runtime dependencies, 30-minute CDN cache, deployed on Vercel.
+**Currently implemented.** 28 SVG card endpoints (`/api/*`), 17 built-in themes plus gist-hosted custom palettes via `theme_url=`, five bundled variable fonts, `/api/stack` composition with namespaced child IDs, a live playground at [profilekit.vercel.app](https://profilekit.vercel.app), and an MCP wrapper at [`@heznpc/profilekit-mcp`](https://www.npmjs.com/package/@heznpc/profilekit-mcp). Two deployment paths: **Vercel functions** (primary, `api/[endpoint].js`) and an **optional self-hosted Docker** image (`Dockerfile` + `server.js`) running the same handlers. Zero runtime dependencies, 30-minute CDN cache on the hosted instance.
 
 **Planned.** A single-card preset gallery at `/gallery` — adopt someone else's design URL as a starting point, then tweak parameters in the editor. Cross-agent preset compile (one preset → Claude Code, Cursor, Codex CLI configs).
 
-**Design intent.** *No ranking, composable presentation.* Each card is a parameter-only URL — every visual property exposed as a query string so the same endpoint renders in a GitHub README, a dev.to bio, a Hashnode header, or a slide cover with no template forking. The gallery is for *adoption*, not voting: you start from someone else's preset and edit it; we do not show which preset is "most popular." Pure SVG with CSS / SMIL keeps animations alive inside GitHub's image proxy and removes the JavaScript attack surface.
+**Design intent.** *No ranking, composable presentation.* Each card is a parameter-only URL — every visual property exposed as a query string so the same endpoint renders in a GitHub README, a dev.to bio, a Hashnode header, or a slide cover with no template forking. The gallery is for *adoption*, not voting: you start from someone else's preset and edit it; we do not show which preset is "most popular." Pure SVG with CSS / SMIL keeps animations alive inside GitHub's image proxy and removes the JavaScript attack surface. The self-hosted Docker path reuses the exact same handler files as the Vercel path via a thin `server.js` adapter — there is no "Docker-only" or "Vercel-only" code surface.
 
-**Non-goals.** No ratings. No rankings. No leaderboards. No remix lineage / fork trees. No raster fallback for upload-only platforms (LinkedIn, Discord, X, Medium) — export to PNG yourself if you need one; we will not pretend the SVG works there. No tracking pixels, no per-view analytics.
+**Non-goals.** No ratings. No rankings. No leaderboards. No remix lineage / fork trees. No raster fallback for upload-only platforms (LinkedIn, Discord, X, Medium) — export to PNG yourself if you need one; we will not pretend the SVG works there. No tracking pixels, no per-view analytics. **The self-hosted Docker mode does not replace the Vercel path** — it is purely additive for users who want to run ProfileKit on their own infrastructure. The hosted instance continues to be the default and is unaffected by any change to `server.js` or the Dockerfile.
 
 **Redacted.** None.
 
@@ -663,12 +663,37 @@ A gallery of dimension presets for each context lives in [`examples/README.md`](
 
 Copy any URL from the gallery, change the `name` / `subtitle` / `theme`, and drop it into the matching context.
 
-## Self-Hosting
+## Self-hosting
+
+Two supported paths. Pick whichever fits your infrastructure — both run the same handler code from `src/endpoints/`.
+
+### Path A — Vercel (default)
 
 1. Fork this repo
 2. Deploy to [Vercel](https://vercel.com/new)
 3. Add environment variable: `GITHUB_TOKEN` — [create one here](https://github.com/settings/tokens) (no scopes needed for public data)
 4. Done. Your endpoints are at `https://your-project.vercel.app/api/*`
+
+### Path B — Docker (any container host)
+
+The repo ships a `Dockerfile` and a `server.js` adapter that turns the same handler files into a plain Node 22 HTTP server. No package install step (zero runtime deps), so the image builds in seconds.
+
+```bash
+# Build once
+docker build -t profilekit:local .
+
+# Run a single replica
+docker run --rm -p 3000:3000 \
+  -e GITHUB_TOKEN=ghp_... \
+  profilekit:local
+# → http://localhost:3000/api/divider?style=wave
+```
+
+For a real deployment (multiple replicas behind a load balancer), see [`examples/self-host/`](examples/self-host/) — `docker compose up --build --scale web=3` brings up three app replicas behind nginx round-robin. Each response carries an `X-ProfileKit-Instance` header so you can verify the LB is rotating across replicas.
+
+**Known limitation — token pool is per-process.** `src/common/github-token.js` keeps GitHub rate-limit state in process memory. With N replicas, each maintains its own pool independently, so a 429 on replica A doesn't tell replica B to skip the same token. For low-volume self-hosts it's invisible; for high-volume, either give each replica its own GitHub token (via `GITHUB_TOKENS=` comma list or `GITHUB_TOKEN_1..N` numbered form, see `.env.example`) or front the deployment with a shared rate-limit store (Redis) — out of scope for the bundled example.
+
+The Docker path is purely additive — the Vercel path keeps working unchanged.
 
 ## Roadmap
 
