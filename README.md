@@ -69,7 +69,7 @@ A community gallery for sharing single-card presets and adopting others' designs
 
 <p>
   <img src="https://profilekit.vercel.app/api/quote?daily=true" alt="Quote" />
-  <img src="https://profilekit.vercel.app/api/social?github=heznpc&email=heznpc@gmail.com&layout=compact" alt="Social" />
+  <img src="https://profilekit.vercel.app/api/social?github=heznpc&layout=compact" alt="Social" />
 </p>
 
 <p align="center">
@@ -235,6 +235,18 @@ The GitHub-profile-card space has two long-running projects ProfileKit is most o
 ![Tags](https://profilekit.vercel.app/api/tags?tags=React,TypeScript,Go,Python)
 ![Snake](https://profilekit.vercel.app/api/snake)
 ```
+
+## Verify locally
+
+```bash
+npm ci
+npm test
+npm run build
+npm run smoke:server
+npm audit --audit-level=high
+```
+
+`npm run build` performs the same syntax check used by CI. `npm run smoke:server` starts the actual `server.js` entrypoint on a temporary local port, checks `/api/health`, and renders one SVG endpoint without requiring credentials.
 
 ## Themes
 
@@ -704,7 +716,7 @@ The Docker path is purely additive — the Vercel path keeps working unchanged.
 ## Tech
 
 - Zero runtime dependencies
-- Node.js 18+ (native fetch)
+- Node.js 22+ (native fetch)
 - Pure SVG string templates with CSS / SMIL animations
 - Vercel serverless functions
 - 30-minute CDN cache (12-hour for daily quotes)
