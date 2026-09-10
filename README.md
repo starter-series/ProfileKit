@@ -36,9 +36,11 @@ A community gallery for sharing single-card presets and adopting others' designs
 
 ## About this project
 
-**Currently implemented.** 28 SVG card endpoints (`/api/*`), 17 built-in themes plus gist-hosted custom palettes via `theme_url=`, five bundled variable fonts, `/api/stack` composition with namespaced child IDs, a live playground at [profilekit.vercel.app](https://profilekit.vercel.app), and an MCP wrapper at [`profilekit-mcp`](https://github.com/heznpc/profilekit-mcp). Two deployment paths: **Vercel functions** (primary, `api/[endpoint].js`) and an **optional self-hosted Docker** image (`Dockerfile` + `server.js`) running the same handlers. Zero runtime dependencies, 30-minute CDN cache on the hosted instance.
+**Currently implemented.** 28 SVG card endpoints (`/api/*`), 17 built-in themes plus gist-hosted custom palettes via `theme_url=`, five bundled variable fonts, `/api/stack` composition with namespaced child IDs, and a live playground at [profilekit.vercel.app](https://profilekit.vercel.app). Two deployment paths: **Vercel functions** (primary, `api/[endpoint].js`) and an **optional self-hosted Docker** image (`Dockerfile` + `server.js`) running the same handlers. Zero runtime dependencies, 30-minute CDN cache on the hosted instance.
 
-**Planned.** A single-card preset gallery at `/gallery` — adopt someone else's design URL as a starting point, then tweak parameters in the editor. Cross-agent preset compile (one preset → Claude Code, Cursor, Codex CLI configs).
+**Planned.** A single-card preset gallery at `/gallery` — adopt someone else's design URL as a starting point, then tweak parameters in the editor.
+
+**Project scope.** Active development is focused on ProfileKit's cards, composition, and editor. The standalone MCP integration was retired in September 2026. Tools can discover available cards and themes through `/api/catalog`.
 
 **Design intent.** *No ranking, composable presentation.* Each card is a parameter-only URL — every visual property exposed as a query string so the same endpoint renders in a GitHub README, a dev.to bio, a Hashnode header, or a slide cover with no template forking. The gallery is for *adoption*, not voting: you start from someone else's preset and edit it; we do not show which preset is "most popular." Pure SVG with CSS / SMIL keeps animations alive inside GitHub's image proxy and removes the JavaScript attack surface. The self-hosted Docker path reuses the exact same handler files as the Vercel path via a thin `server.js` adapter — there is no "Docker-only" or "Vercel-only" code surface.
 
@@ -182,10 +184,9 @@ The GitHub-profile-card space has two long-running projects ProfileKit is most o
 | Configuration | Query string + optional `theme_url=` gist for palettes | Query string + per-theme presets | YAML in `.github/workflows/` |
 | Runtime deps | Zero (Node 22 `node:test`, `node:fetch`) | Several | Action toolchain + Docker image |
 | Cards beyond GitHub stats | Hero / section / divider / now / timeline / tags / toc / typing / wave / terminal / neon / glitch / matrix / snake / equalizer / heartbeat / constellation / radar / quote / posts (devto, medium, rss) | GitHub stats, languages, pin, gists | Mostly GitHub stats; plugin set is the largest of the three |
-| MCP integration | First-class — [`profilekit-mcp`](https://github.com/heznpc/profilekit-mcp) lets Claude / Cursor / Codex CLI build cards as a tool call | None | None |
 | Composition into one image | `/api/stack?cards=hero,section,now,…` | Not native | The whole point of metrics is a single composed image |
 
-**When ProfileKit fits well**: you want the same card definition usable in a GitHub README *and* a dev.to bio *and* an MCP tool call, you don't want a GitHub Action committing to your repo, and "no ranking, composable presentation" sounds right for your profile.
+**When ProfileKit fits well**: you want the same card definition usable in a GitHub README, a developer blog, and a personal site, you don't want a GitHub Action committing to your repo, and "no ranking, composable presentation" sounds right for your profile.
 
 **When the alternatives fit better**: if you want one giant pre-rendered SVG with 300+ knobs in YAML, `lowlighter/metrics` is the better tool. If you only need GitHub stats blocks and want the most adopted option, `anuraghazra/github-readme-stats` is the default.
 
@@ -709,9 +710,8 @@ The Docker path is purely additive — the Vercel path keeps working unchanged.
 
 ## Roadmap
 
-- **Now** — 28 card endpoints, 17 themes, playground at [profilekit.vercel.app](https://profilekit.vercel.app), MCP server at [`profilekit-mcp`](https://github.com/heznpc/profilekit-mcp), curated picks in the Templates tab.
+- **Now** — 28 card endpoints, 17 themes, playground at [profilekit.vercel.app](https://profilekit.vercel.app), curated picks in the Templates tab.
 - **Next — Gallery.** Single-card presets shareable by URL or registered in a browseable index at `profilekit.vercel.app/gallery`. Adopting a preset opens it in the editor with the original params pre-filled so you tweak from a starting point instead of a blank canvas. Editing UX targets a Sims 3 Create-A-Style / Naver-blog-editor feel — direct manipulation on the preview, not just a form. **Explicit non-goals**: no ratings, no rankings, no remix lineage, no leaderboards.
-- **Parallel** — Cross-agent compile (one preset definition → Claude Code, Cursor, Codex CLI configs). Lives as a feature, not a roadmap tier.
 
 ## Tech
 

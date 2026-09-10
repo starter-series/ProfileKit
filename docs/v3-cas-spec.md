@@ -118,5 +118,5 @@ Vertical slice with intentionally narrow surface so we can validate the model en
 - Ratings, rankings, leaderboards
 - Remix lineage, attribution graph
 - Marketplace, paid templates
-- Cross-agent compile (Cursor / Codex) — separate feature, parallel track
+- Cross-agent compile (Cursor / Codex)
 - Brand thesis copy ("human craft layer", "Sims 3 CAS for devs") — UX reference only, not brand
